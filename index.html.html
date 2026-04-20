@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNA Structure and Replication Quiz</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --background: #f8f9fa;
+            --text: #333;
+            --correct: #27ae60;
+            --incorrect: #c0392b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+        }
+
+        .instructor-info {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 30px;
+        }
+
+        .header-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e8f4f8;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .student-section {
+            margin-bottom: 25px;
+        }
+
+        .student-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--secondary);
+        }
+
+        .student-section input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .question-block {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #fafafa;
+            border-left: 4px solid var(--accent);
+            border-radius: 0 6px 6px 0;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .option-label {
+            display: block;
+            margin-bottom: 10px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .option-label:hover {
+            background: #ecf0f1;
+        }
+
+        .option-label input {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 30px;
+        }
+
+        .submit-btn:hover {
+            background: #1a252f;
+        }
+
+        #resultsArea {
+            display: none;
+            margin-top: 40px;
+            border-top: 2px dashed #bdc3c7;
+            padding-top: 30px;
+        }
+
+        .score-banner {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .score-good { background: #d4edda; color: #155724; }
+        .score-avg { background: #fff3cd; color: #856404; }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th, .results-table td {
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            text-align: left;
+        }
+
+        .results-table th {
+            background: var(--primary);
+            color: white;
+        }
+
+        .status-correct { color: var(--correct); font-weight: bold; }
+        .status-incorrect { color: var(--incorrect); font-weight: bold; }
+
+        .submission-status {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1>DNA Structure & Replication</h1>
+    <div class="instructor-info">Instructor: Dr. DMAshraf1999</div>
+
+    <div class="header-panel">
+        <div>Total Time: 30 Minutes</div>
+        <div id="timerDisplay">Time Remaining: 30:00</div>
+    </div>
+
+    <form id="quizForm">
+        <div class="student-section">
+            <label for="studentName">Student Name:</label>
+            <input type="text" id="studentName" name="Student Name" required placeholder="Enter your full name">
+        </div>
+
+        <div id="questionsWrapper"></div>
+
+        <button type="submit" id="submitButton" class="submit-btn">Submit Quiz</button>
+        <div id="formStatus" class="submission-status"></div>
+    </form>
+
+    <div id="resultsArea">
+        <div id="scoreBanner" class="score-banner"></div>
+        <h3>Review Your Answers</h3>
+        <table class="results-table">
+            <thead>
+                <tr>
+                    <th>Q#</th>
+                    <th>Your Answer</th>
+                    <th>Correct Answer</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Quiz Data
+    const quizData = [
+        { q: "Which scientists were primarily responsible for developing the model of DNA structure in the 1950s?", a: "B", options: ["Rosalind Franklin and Maurice Wilkins", "James Watson and Francis Crick", "Gregor Mendel and Charles Darwin", "Louis Pasteur and Robert Koch"] },
+        { q: "What are the three basic components that make up a DNA nucleotide?", a: "B", options: ["Glucose, phosphate, and a nitrogenous base", "Deoxyribose sugar, phosphate, and a nitrogenous base", "Ribose sugar, sulfate, and an amino acid", "Deoxyribose sugar, amino acid, and a lipid"] },
+        { q: "Which nitrogenous bases are classified as purines?", a: "B", options: ["Cytosine and Thymine", "Adenine and Guanine", "Adenine and Thymine", "Guanine and Cytosine"] },
+        { q: "Which nitrogenous bases are classified as pyrimidines?", a: "C", options: ["Adenine and Guanine", "Cytosine and Guanine", "Cytosine and Thymine", "Adenine and Thymine"] },
+        { q: "What is the name of the sugar found in DNA?", a: "C", options: ["Ribose", "Glucose", "Deoxyribose", "Fructose"] },
+        { q: "In the DNA double helix, the 'rungs' of the ladder are held together by which type of bond?", a: "C", options: ["Strong covalent bonds", "Ionic bonds", "Weak hydrogen bonds", "Metallic bonds"] },
+        { q: "How many hydrogen bonds form between Cytosine and Guanine?", a: "C", options: ["1", "2", "3", "4"] },
+        { q: "How many hydrogen bonds form between Adenine and Thymine?", a: "B", options: ["1", "2", "3", "4"] },
+        { q: "Which term describes the orientation of the two DNA strands running in opposite directions?", a: "B", options: ["Parallel", "Antiparallel", "Perpendicular", "Symmetrical"] },
+        { q: "What is the structural shape of a DNA molecule?", a: "B", options: ["A straight staircase", "A twisted ladder (Double Helix)", "A circular chain", "A flat ribbon"] },
+        { q: "Which statement regarding the DNA of prokaryotes is correct?", a: "B", options: ["It is organized into linear chromosomes.", "It is circular in shape.", "It is not made of nucleotides.", "It is only found inside a nucleus."] },
+        { q: "DNA is wound around proteins called ________ to fit inside the nucleus.", a: "B", options: ["Enzymes", "Histones", "Ribosomes", "Lipids"] },
+        { q: "What chemical property allows DNA to bind tightly to histone proteins?", a: "B", options: ["DNA is positively charged and histones are neutral.", "Positively charged amino acids in histones attract the negatively charged DNA.", "Both DNA and histones are hydrophobic.", "They are joined by DNA ligase during packaging."] },
+        { q: "A section of DNA that carries the information for a particular polypeptide is known as a:", a: "B", options: ["Nucleotide", "Gene", "Chromatid", "Centromere"] },
+        { q: "What is the primary function of the sequence of the nitrogenous bases in DNA?", a: "B", options: ["To provide structural support to the sugar-phosphate backbone.", "To act as a code that carries information for making proteins.", "To prevent the DNA from unwinding during cell division.", "To catalyze chemical reactions within the cytoplasm."] },
+        { q: "What is the first step of DNA replication?", a: "B", options: ["The DNA polymerase adds new nucleotides.", "The double helix unwinds and 'unzips.'", "DNA ligase joins fragments together.", "Sister chromatids separate at the centromere."] },
+        { q: "Which enzyme is responsible for untwisting the double helix and separating the parental strands?", a: "C", options: ["Primase", "Topoisomerase", "Helicase", "DNA Ligase"] },
+        { q: "Which enzyme relieves the strain ahead of the replication fork by breaking and rejoining DNA strands?", a: "D", options: ["Helicase", "DNA Polymerase", "Primase", "Topoisomerase"] },
+        { q: "What is the function of the enzyme Primase in DNA replication?", a: "B", options: ["It joins the sugar-phosphate backbones.", "It synthesizes a short RNA chain called a primer.", "It proofreads the DNA for mistakes.", "It breaks the hydrogen bonds between bases."] },
+        { q: "Which enzyme joins the sugar-phosphate backbones of DNA fragments on the lagging strand?", a: "B", options: ["DNA Polymerase", "DNA Ligase", "Helicase", "RNA Polymerase"] },
+        { q: "If a double-stranded DNA molecule is found to consist of 15% Guanine, what is the expected percentage of Thymine?", a: "C", options: ["15%", "30%", "35%", "70%"] },
+        { q: "Which of the following would be the most immediate consequence if Topoisomerase became non-functional?", a: "B", options: ["The DNA strands would fail to separate at the origin.", "The DNA would become overwound and eventually break due to strain.", "RNA primers would not be synthesized.", "The sugar-phosphate backbone would fail to form."] },
+        { q: "How does the cell initiate a new DNA strand if DNA polymerase requires a pre-existing 3' end?", a: "B", options: ["Helicase provides a temporary 3' group.", "Primase synthesizes a short RNA sequence to provide a starting point.", "DNA Ligase connects free-floating bases.", "The DNA molecule is naturally broken to expose an end."] },
+        { q: "Why is the 'semi-conservative' model of replication advantageous?", a: "B", options: ["It allows the cell to use half as much energy.", "It ensures each daughter molecule contains one original parental strand as a template.", "It prevents the double helix from ever fully unwinding.", "It allows leading and lagging strands to move in the same direction."] },
+        { q: "Why is the DNA backbone held by covalent bonds while the bases are held by hydrogen bonds?", a: "B", options: ["To allow DNA to be broken down easily for energy.", "To protect the genetic code while allowing the strands to be 'unzipped' easily.", "To prevent ultraviolet radiation from damaging the sequence.", "To allow DNA to fold into nucleosomes without breaking."] },
+        { q: "If a chemical inhibitor prevented the action of DNA Ligase, what would be most significantly disrupted?", a: "C", options: ["The unwinding of the parental DNA.", "The synthesis of the leading strand.", "The joining of DNA segments on the lagging strand.", "The proofreading of mismatched bases."] },
+        { q: "What structural arrangement is responsible for the first level of DNA compaction in eukaryotes?", a: "B", options: ["The formation of a circular chromosome.", "The winding of DNA around a core of histone proteins.", "The attachment of DNA to the centromere.", "The pairing of purines with pyrimidines."] },
+        { q: "What is the most likely outcome if DNA polymerase loses its ability to proofread?", a: "C", options: ["Replication will stop entirely.", "The rate of synthesis will double.", "The frequency of permanent genetic mutations will increase.", "The DNA will become circular."] },
+        { q: "Why must the lagging strand be synthesized in segments?", a: "B", options: ["There is not enough DNA polymerase available.", "DNA polymerase can only add nucleotides in the 5' to 3' direction.", "The lagging strand contains Uracil instead of Thymine.", "Helicase only unwinds the leading strand template."] },
+        { q: "Why is a chromosome not visible under a light microscope during interphase?", a: "B", options: ["The DNA has been degraded by enzymes.", "The DNA is in a less condensed, chromatin fiber state.", "The DNA has moved into the cytoplasm.", "The histone proteins have been removed."] }
+    ];
+
+    // Render Questions
+    const wrapper = document.getElementById('questionsWrapper');
+    quizData.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'question-block';
+        
+        let optionsHtml = '';
+        const letters = ['A', 'B', 'C', 'D'];
+        
+        item.options.forEach((opt, i) => {
+            optionsHtml += `
+                <label class="option-label">
+                    <input type="radio" name="q${index}" value="${letters[i]}" required>
+                    ${letters[i]}) ${opt}
+                </label>
+            `;
+        });
+
+        div.innerHTML = `
+            <div class="question-text">${index + 1}. ${item.q}</div>
+            ${optionsHtml}
+        `;
+        wrapper.appendChild(div);
+    });
+
+    // Timer Logic (30 Minutes)
+    let totalSeconds = 30 * 60;
+    const timerDisplay = document.getElementById('timerDisplay');
+    
+    const timer = setInterval(() => {
+        if (totalSeconds <= 0) {
+            clearInterval(timer);
+            timerDisplay.textContent = "Time's Up!";
+            document.getElementById('quizForm').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        } else {
+            let m = Math.floor(totalSeconds / 60);
+            let s = totalSeconds % 60;
+            timerDisplay.textContent = `Time Remaining: ${m}:${s < 10 ? '0' : ''}${s}`;
+            totalSeconds--;
+        }
+    }, 1000);
+
+    // Form Submission & Evaluation
+    const form = document.getElementById('quizForm');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Prevents page reload so answers don't disappear
+        clearInterval(timer); // Stop timer
+
+        let score = 0;
+        let detailsLog = "";
+        const resultsBody = document.getElementById('resultsBody');
+        resultsBody.innerHTML = "";
+
+        // Grade the quiz
+        quizData.forEach((item, index) => {
+            const selected = form.querySelector(`input[name="q${index}"]:checked`);
+            const userAnswer = selected ? selected.value : "No Answer";
+            const isCorrect = (userAnswer === item.a);
+            
+            if (isCorrect) score++;
+
+            // Build detailed log for email
+            detailsLog += `Q${index + 1}: Student answered ${userAnswer} (Correct: ${item.a})\n`;
+
+            // Build Results Table Row
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td class="${isCorrect ? 'status-correct' : 'status-incorrect'}">${userAnswer}</td>
+                <td class="status-correct">${item.a}</td>
+            `;
+            resultsBody.appendChild(row);
+        });
+
+        // Display Results Banner
+        const scoreBanner = document.getElementById('scoreBanner');
+        scoreBanner.textContent = `Final Score: ${score} / ${quizData.length}`;
+        scoreBanner.className = (score > 15) ? 'score-banner score-good' : 'score-banner score-avg';
+        
+        document.getElementById('resultsArea').style.display = 'block';
+        document.getElementById('submitButton').style.display = 'none';
+
+        // Prepare Formspree Data
+        const formData = new FormData();
+        formData.append('Student Name', document.getElementById('studentName').value);
+        formData.append('Final Score', `${score} out of ${quizData.length}`);
+        formData.append('Detailed Responses', detailsLog);
+        formData.append('_subject', 'New DNA Quiz Submission');
+
+        // Send to Formspree silently via Fetch
+        const statusText = document.getElementById('formStatus');
+        statusText.textContent = "Submitting results to instructor...";
+
+        fetch('https://formspree.io/f/meolwogo', {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+        }).then(response => {
+            if (response.ok) {
+                statusText.textContent = "Results successfully sent to instructor.";
+                statusText.style.color = "#27ae60";
+            } else {
+                statusText.textContent = "Submission failed. Please check your network.";
+                statusText.style.color = "#c0392b";
+            }
+        }).catch(error => {
+            statusText.textContent = "Error sending results.";
+            statusText.style.color = "#c0392b";
+        });
+    });
+});
+</script>
+
+</body>
+</html>
